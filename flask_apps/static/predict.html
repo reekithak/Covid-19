@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>Covid19 Xray-Predictor</title>
+
+</head>
+<body>
+      <input id ="image-selector" type='file'>
+      <button id="prdict-button">Predict</button>
+      <p style = 'font-weight: bold'>Predictions</p>
+      <p>Normal: <span id="Normal-prediction"></span></p>
+      <p>Weird: <span id="Weird-prediction"></span></p>
+      <img id="selected-image" src='/'>
+      <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+      <script>
+          let base64Image:
+          $("#image-selector").change(function(){
+              let reader = new FileReader();
+              reader.onload = function(e){
+                  let dataURL = reader.result;
+                  $("#selected-image").attr("src",dataURL);
+                  base64Image = dataURL.replace("data:image/JPEG;base64","");
+                  console.log(base64Image);
+                }
+            reader.readAsDataURL($("#image-selector")[0].files[0]);
+            $("#Normal-prediction").text("");
+            $("#Weird-prediction").text("");
+
+                                          
+
+          });
+
+
+          $("#predict-button").click(function(event){
+              let message = {
+                  image: base64Image
+              }
+              console.log(message);
+              $.post("http://10.0.0.4:5000/predict",JSON.stringify(message),function(response)){
+                  $("#Normal-prediction").text(response.prediction.Normal.toFixed(6));
+                  $("#Weird-prediction").text(response.prediction.Weird.toFixed(6));
+                  console.log(response);
+              });
+            
+          });
+
+
+
+
+
+
+
+
+
+      </script>
+
+
+
+
+
+
+</body>
+</html>
